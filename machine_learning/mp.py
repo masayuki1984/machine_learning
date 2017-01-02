@@ -19,9 +19,13 @@ plt.subplot(1, 1, 1)
 # 各方程式の線形とマーカー、ラベルを設定し、プロット
 ## 線形図
 plt.plot(x, y_sin, marker='o', markersize=5, label='line')
+## 散布図
 plt.scatter(x_rand, y_rand, label='scatter')
 
+# 凡例表示を設定
 plt.legend()
+# グリッド線を表示
 plt.grid(True)
 
+# グラフ表示
 plt.show()
