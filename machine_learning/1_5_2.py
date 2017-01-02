@@ -73,3 +73,70 @@ plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0)
 
 # グラフを表示
 plt.show()
+
+
+######################
+#### 分類
+
+### 分類ラベル作成
+
+# クラスの閾値、原点からの半径
+CLASS_RADIUS = 0.6
+
+# 近い/遠いでクラス分け -- 近いと True、遠いと False
+labels = (data_x**2 + data_vy**2) < CLASS_RADIUS**2
+
+# 学習データ/テストデータに分類
+label_train = labels[idx_train]  # 学習データ
+label_test = labels[idx_test]  # テストデータ
+
+
+### グラフ描画
+
+# 近い/遠いクラス、学習/テストの4種類の散布図を重ねる
+
+plt.scatter(x_train[label_train], y_train[label_train], c='black', s=30, marker='*', label='near train')
+plt.scatter(x_train[label_train != True], y_train[label_train != True], c='black', s=30, marker='+', label='far train')
+
+plt.scatter(x_test[label_test], y_test[label_test], c='black', s=30, marker='^', label='near test')
+plt.scatter(x_test[label_test != True], y_test[label_test != True], c='black', s=30, marker='x', label='far test')
+
+# 元の線を表示
+plt.plot(data_x, data_ty, linestyle=':', label='non noise curve')
+
+# クラスの分離円
+circle = plt.Circle((0,0), CLASS_RADIUS, alpha=0.1, label='near area')
+ax = plt.gca()
+ax.add_patch(circle)
+
+# x軸 / y軸の範囲を設定
+plt.xlim(x_min, x_max)  # x軸の範囲設定
+plt.ylim(y_min, y_max)  # y軸の範囲設定
+
+# 凡例の表示位置を指定
+plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0)
+
+# グラフを表示
+plt.show()
+
+
+### 学習
+
+from sklearn import svm
+from sklearn.metrics import confusion_matrix, accuracy_score
+
+data_train = np.c_[x_train, y_train]
+data_test = np.c_[x_test, y_test]
+
+# SVMの分類器を作成、学習
+classifier = svm.SVC(gamma=1)
+classifier.fit(data_train, label_train.reshape(-1))
+
+# Testデータで評価
+pred_test = classifier.predict(data_test)
+
+# Accuracyを表示
+print('accuracy_score:\n', accuracy_score(label_test.reshape(-1), pred_test))
+
+# 混同行列を表示
+print('Confusion matrix:\n', confusion_matrix(label_test.reshape(-1), pred_test))
